@@ -1,8 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Material, PriceSettings, Product, QuoteInfo, materialLabel } from "../core/model";
 import { MaterialNest, groupSheets } from "../core/nest";
 import type { Quote } from "../core/pricing";
-import { PRODUCT_COLORS, Section } from "./common";
+import { PRODUCT_COLORS, Section, copyText, isEmbedded } from "./common";
 import { num, pct, won } from "./format";
 import { SheetView } from "./NestingTab";
 import { downloadFile } from "./storage";
@@ -27,7 +27,8 @@ export function QuoteTab({ quote, info, setInfo, products, materials, nests, pri
     </label>
   );
 
-  const exportCsv = () => {
+  const [copied, setCopied] = useState("");
+  const buildRows = () => {
     const rows: (string | number)[][] = [
       ["견적번호", info.number],
       ["일자", info.date],
@@ -51,17 +52,33 @@ export function QuoteTab({ quote, info, setInfo, products, materials, nests, pri
       [],
       ["메모", info.memo],
     ];
-    const csv = rows.map((r) => r.map(csvCell).join(",")).join("\r\n");
+    return rows;
+  };
+  const exportCsv = () => {
+    const csv = buildRows().map((r) => r.map(csvCell).join(",")).join("\r\n");
     // 엑셀에서 한글이 깨지지 않도록 BOM 추가
     downloadFile(`견적_${info.number || info.date}.csv`, "﻿" + csv, "text/csv;charset=utf-8");
+  };
+  const copyForExcel = async () => {
+    // 탭으로 구분한 텍스트는 엑셀에 붙여넣으면 칸이 그대로 나뉜다
+    const tsv = buildRows().map((r) => r.map((c) => String(c ?? "").replace(/[\t\r\n]+/g, " ")).join("\t")).join("\r\n");
+    const ok = await copyText(tsv);
+    setCopied(ok ? "복사했습니다. 엑셀 시트에 붙여넣으세요." : "이 브라우저에서는 복사가 막혀 있습니다.");
+    setTimeout(() => setCopied(""), 4000);
   };
 
   return (
     <div className="quote-tab">
       <div className="quote-actions no-print">
-        <button className="primary" onClick={() => window.print()}>인쇄 / PDF 저장</button>
-        <button onClick={exportCsv}>엑셀(CSV) 내보내기</button>
-        <span className="note">제품 단가는 자재·가공비를 제품별로 배분한 참고값입니다.</span>
+        {!isEmbedded && <button className="primary" onClick={() => window.print()}>인쇄 / PDF 저장</button>}
+        {!isEmbedded && <button onClick={exportCsv}>엑셀(CSV) 내보내기</button>}
+        <button className={isEmbedded ? "primary" : ""} onClick={copyForExcel}>엑셀용 복사</button>
+        <span className="note">
+          {copied ||
+            (isEmbedded
+              ? "링크 버전에서는 인쇄와 파일 저장이 막혀 있어 복사만 됩니다."
+              : "제품 단가는 자재·가공비를 제품별로 배분한 참고값입니다.")}
+        </span>
       </div>
 
       <div className="print-area">

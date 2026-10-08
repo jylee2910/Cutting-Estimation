@@ -1,5 +1,5 @@
 import { DEFAULT_MATERIALS, DEFAULT_PRICE, EXTRA_BASIS_LABEL, ExtraBasis, Material, PriceSettings, Product, uid } from "../core/model";
-import { NumInput, Section } from "./common";
+import { ConfirmButton, NumInput, Section } from "./common";
 
 interface Props {
   materials: Material[];
@@ -31,12 +31,13 @@ export function SettingsTab({ materials, setMaterials, priceSettings: ps, setPri
             >
               + 판재 추가
             </button>
-            <button
-              className="small"
-              onClick={() => confirm("판재 목록을 기본 예시값으로 되돌릴까요? (직접 추가한 판재는 사라집니다)") && setMaterials(() => DEFAULT_MATERIALS)}
+            <ConfirmButton
+              title="직접 추가한 판재는 사라집니다"
+              onConfirm={() => setMaterials(() => DEFAULT_MATERIALS)}
+              confirmText="한 번 더 누르면 복원"
             >
               기본값 복원
-            </button>
+            </ConfirmButton>
           </>
         }
       >

@@ -7,6 +7,8 @@ import { DrawingCanvas } from "./DrawingCanvas";
 import { num } from "./format";
 import { ProductList } from "./ProductList";
 
+const SAMPLE_FILES = ["sample-panels.svg", "sample-parts.dxf", "sample-drawing.pdf"];
+
 export interface DrawingState {
   drawing: Drawing;
   excluded: number[];
@@ -77,6 +79,21 @@ export function ImportTab(props: Props) {
       setSelected(new Set());
     }
     setBusy(false);
+  };
+
+  const loadSamples = async () => {
+    try {
+      const files = await Promise.all(
+        SAMPLE_FILES.map(async (name) => {
+          const res = await fetch(`./${name}`);
+          if (!res.ok) throw new Error(`${name} (${res.status})`);
+          return new File([await res.blob()], name);
+        }),
+      );
+      await handleFiles(files);
+    } catch (e) {
+      setErrors([`샘플을 불러오지 못했습니다: ${(e as Error).message}`]);
+    }
   };
 
   const selectedShapes = shapes.filter((s) => selected.has(s.index));
@@ -267,6 +284,9 @@ export function ImportTab(props: Props) {
             <h2>시안 파일을 불러오세요</h2>
             <p>벡터 시안(SVG, DXF, PDF, AI)에서 닫힌 윤곽을 찾아 제품 형상으로 인식합니다.</p>
             <p>도면 없이 규격만 있을 때는 오른쪽 <b>직접 입력</b>으로 사각 제품을 추가하세요.</p>
+            <button className="primary" disabled={busy} onClick={loadSamples}>
+              샘플 시안 불러오기 (SVG · DXF · PDF)
+            </button>
           </div>
         ) : (
           <>

@@ -87,3 +87,57 @@ export function Section({ title, right, children, className }: { title: React.Re
     </section>
   );
 }
+
+/** 두 번 눌러야 실행되는 버튼 (브라우저 confirm 창 대신 화면 안에서 확인) */
+export function ConfirmButton({
+  onConfirm,
+  children,
+  confirmText = "한 번 더 누르면 실행",
+  className = "small",
+  title,
+}: {
+  onConfirm: () => void;
+  children: React.ReactNode;
+  confirmText?: string;
+  className?: string;
+  title?: string;
+}) {
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!armed) return;
+    const t = setTimeout(() => setArmed(false), 3000);
+    return () => clearTimeout(t);
+  }, [armed]);
+  return (
+    <button
+      className={className + (armed ? " danger" : "")}
+      title={title}
+      onClick={() => {
+        if (armed) {
+          setArmed(false);
+          onConfirm();
+        } else setArmed(true);
+      }}
+    >
+      {armed ? confirmText : children}
+    </button>
+  );
+}
+
+/** claude.ai 링크 등 iframe 안에서 열렸는지 (이때는 인쇄·파일 저장이 막혀 있다) */
+export const isEmbedded = (() => {
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true;
+  }
+})();
+
+export async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}

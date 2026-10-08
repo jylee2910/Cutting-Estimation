@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Material, Product, materialLabel, productMetrics, productScale, rectProduct, scalePts } from "../core/model";
-import { NumInput, PRODUCT_COLORS, Section, ptsToPath } from "./common";
+import { ConfirmButton, NumInput, PRODUCT_COLORS, Section, ptsToPath } from "./common";
 import { num } from "./format";
 
 interface Props {
@@ -31,9 +31,9 @@ export function ProductList({ products, setProducts, materials, defaultMaterialI
       title={<>③ 제품 목록 <span className="muted">{products.length}종</span></>}
       right={
         products.length > 0 && (
-          <button className="small" onClick={() => confirm("제품 목록을 모두 지울까요?") && setProducts(() => [])}>
+          <ConfirmButton onConfirm={() => setProducts(() => [])} confirmText="한 번 더 누르면 모두 삭제">
             모두 삭제
-          </button>
+          </ConfirmButton>
         )
       }
     >

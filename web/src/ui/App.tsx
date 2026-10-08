@@ -12,6 +12,7 @@ import {
 } from "../core/model";
 import { capacityPerSheet, nestProducts } from "../core/nest";
 import { buildQuote } from "../core/pricing";
+import { ConfirmButton, isEmbedded } from "./common";
 import { today, won } from "./format";
 import { DrawingState, ImportTab } from "./ImportTab";
 import { NestingTab } from "./NestingTab";
@@ -41,6 +42,7 @@ export default function App() {
   const [defMat, setDefMat] = usePersistentState<{ id: string }>("ce.defaultMaterial", { id: DEFAULT_MATERIALS[0].id });
   const defaultMaterialId = materials.some((m) => m.id === defMat.id) ? defMat.id : materials[0]?.id || "";
   const fileRef = useRef<HTMLInputElement>(null);
+  const [notice, setNotice] = useState("");
 
   const nests = useMemo(() => nestProducts(products, materials, nestSettings), [products, materials, nestSettings]);
   const quote = useMemo(() => buildQuote(products, nests, materials, priceSettings), [products, nests, materials, priceSettings]);
@@ -77,11 +79,10 @@ export default function App() {
       }
       setTab("nest");
     } catch (e) {
-      alert("작업 파일을 열 수 없습니다: " + (e as Error).message);
+      setNotice("작업 파일을 열 수 없습니다: " + (e as Error).message);
     }
   };
   const newQuote = () => {
-    if (products.length && !confirm("현재 제품 목록과 견적 정보를 비우고 새 견적을 시작할까요?")) return;
     setProducts([]);
     setDrawings([]);
     setActiveId(null);
@@ -115,8 +116,16 @@ export default function App() {
           <span className="sum-total">합계 <b>₩{won(quote.total)}</b></span>
         </div>
         <div className="file-actions">
-          <button onClick={newQuote}>새 견적</button>
-          <button onClick={saveProject} disabled={!products.length}>작업 저장</button>
+          {products.length ? (
+            <ConfirmButton className="" onConfirm={newQuote} confirmText="비우고 새로 시작?" title="현재 제품 목록과 견적 정보를 비웁니다">
+              새 견적
+            </ConfirmButton>
+          ) : (
+            <button onClick={newQuote}>새 견적</button>
+          )}
+          {!isEmbedded && (
+            <button onClick={saveProject} disabled={!products.length}>작업 저장</button>
+          )}
           <button onClick={() => fileRef.current?.click()}>작업 열기</button>
           <input
             ref={fileRef}
@@ -132,6 +141,11 @@ export default function App() {
         </div>
       </header>
 
+      {notice && (
+        <p className="msg error notice no-print">
+          {notice} <button className="icon" onClick={() => setNotice("")}>×</button>
+        </p>
+      )}
       <div className="content">
         {tab === "import" && (
           <ImportTab

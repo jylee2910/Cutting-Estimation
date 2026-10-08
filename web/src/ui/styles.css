@@ -35,6 +35,8 @@ button:disabled { opacity: 0.45; cursor: default; }
 button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 button.primary:hover:not(:disabled) { background: #1d4ed8; color: #fff; }
 button.small { padding: 3px 8px; font-size: 12px; }
+button.danger, button.danger:hover:not(:disabled) { background: var(--bad); border-color: var(--bad); color: #fff; }
+.notice { margin: 8px 16px 0; display: flex; align-items: center; justify-content: space-between; }
 button.icon { border: none; background: none; padding: 0 6px; font-size: 16px; color: var(--muted); }
 button.icon:hover { color: var(--bad); }
 button.link { border: none; background: none; padding: 0; text-align: left; color: inherit; overflow: hidden; text-overflow: ellipsis; }
