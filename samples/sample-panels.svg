@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="820mm" height="520mm" viewBox="0 0 820 520">
+  <style>.cut{fill:none;stroke:#ff0000;stroke-width:0.3}</style>
+  <g id="plate" transform="translate(20,20)">
+    <rect class="cut" x="0" y="0" width="600" height="300"/>
+    <circle class="cut" cx="15" cy="15" r="3"/>
+    <circle class="cut" cx="585" cy="15" r="3"/>
+    <circle class="cut" cx="15" cy="285" r="3"/>
+    <circle class="cut" cx="585" cy="285" r="3"/>
+  </g>
+  <circle class="cut" cx="720" cy="130" r="70"/>
+  <rect class="cut" x="20" y="350" width="150" height="80" rx="10"/>
+  <rect class="cut" x="200" y="350" width="150" height="80" rx="10"/>
+  <path class="cut" d="M480.000,340.000L500.572,391.684L556.085,395.279L513.287,430.816L527.023,484.721L480.000,455.000L432.977,484.721L446.713,430.816L403.915,395.279L459.428,391.684Z"/>
+  <text x="20" y="500" font-size="12">판넬 600 x 300 (타공 Ø6 4개), 원형 Ø140, 라운드 150x80 2개, 별</text>
+</svg>
